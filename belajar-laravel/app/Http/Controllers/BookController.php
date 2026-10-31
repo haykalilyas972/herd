@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Book;
+use App\Models\Category;
 use Illuminate\Http\Request;
 
 class BookController extends Controller
@@ -10,7 +11,7 @@ class BookController extends Controller
     // READ: Menampilkan daftar buku
     public function index()
     {
-        $books = Book::all();
+        $books = Book::with('category')->get();
 
         return view('books.index', compact('books'));
     }
@@ -18,7 +19,9 @@ class BookController extends Controller
     // CREATE: Menampilkan form tambah buku
     public function create()
     {
-        return view('books.create');
+    $categories = Category::orderBy('name')->get();
+
+    return view('books.create', compact('categories'));
     }
 
     // CREATE: Menyimpan buku baru
@@ -27,8 +30,9 @@ class BookController extends Controller
         $validated = $request->validate([
             'title' => 'required|string|max:255',
             'author' => 'required|string|max:255',
-            'year' => 'required|integer|min:1000|max:9999',
+            'year' => 'required|integer|digits:4|min:1000|max:9999',
             'stock' => 'required|integer|min:0',
+            'category_id' => 'required|exists:categories,id',
         ]);
 
         Book::create($validated);
@@ -47,24 +51,27 @@ class BookController extends Controller
     // UPDATE: Menampilkan form edit
     public function edit(Book $book)
     {
-        return view('books.edit', compact('book'));
+    $categories = Category::orderBy('name')->get();
+
+    return view('books.edit', compact('book', 'categories'));
     }
 
     // UPDATE: Menyimpan perubahan buku
     public function update(Request $request, Book $book)
     {
-        $validated = $request->validate([
-            'title' => 'required|string|max:255',
-            'author' => 'required|string|max:255',
-            'year' => 'required|integer|digit:4|min:2000|max:2026',
-            'stock' => 'required|integer|min:0',
-        ]);
+    $validated = $request->validate([
+        'title'       => 'required|string|max:255',
+        'author'      => 'required|string|max:255',
+        'year'        => 'required|integer|digits:4|min:2000|max:2026',
+        'stock'       => 'required|integer|min:0',
+        'category_id' => 'required|exists:categories,id',
+    ]);
 
-        $book->update($validated);
+    $book->update($validated);
 
-        return redirect()->route('books.index')
-        ->with('success', 'Buku berhasil diperbarui!');
-    }
+    return redirect()->route('books.index')
+        ->with('success', 'Data buku berhasil diperbarui.');
+        }
 
     // DELETE: Menghapus buku
     public function destroy(Book $book)
