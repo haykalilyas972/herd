@@ -17,19 +17,24 @@
 
     @forelse ($books as $book)
         <h3>{{ $loop->iteration }}. {{ $book->title }}</h3>
+
         <p>Penulis: {{ $book->author }}</p>
         <p>Tahun Terbit: {{ $book->year }}</p>
         <p>Stok: {{ $book->stock }}</p>
+        <p>Kategori: {{ $book->category?->name ?? 'Belum ada kategori' }}</p>
+
         <a href="{{ route('books.edit', $book->id) }}">Edit</a>
+
         <form action="{{ route('books.destroy', $book->id) }}"
-      method="POST"
-      onsubmit="return confirm('Yakin ingin menghapus buku ini?')">
+              method="POST"
+              onsubmit="return confirm('Yakin ingin menghapus buku ini?')">
 
-    @csrf
-    @method('DELETE')
+            @csrf
+            @method('DELETE')
 
-    <button type="submit">Hapus</button>
-</form>
+            <button type="submit">Hapus</button>
+        </form>
+
         <hr>
     @empty
         <p>Belum ada data buku.</p>
