@@ -24,16 +24,17 @@ class BookController extends Controller
     // CREATE: Menyimpan buku baru
     public function store(Request $request)
     {
-        $data = $request->validate([
+        $validated = $request->validate([
             'title' => 'required|string|max:255',
             'author' => 'required|string|max:255',
             'year' => 'required|integer|min:1000|max:9999',
             'stock' => 'required|integer|min:0',
         ]);
 
-        Book::create($data);
+        Book::create($validated);
 
-        return redirect()->route('books.index')
+        return redirect()
+        ->route('books.index')
         ->with('success', 'Buku berhasil ditambahkan!');
     }
 
@@ -52,14 +53,14 @@ class BookController extends Controller
     // UPDATE: Menyimpan perubahan buku
     public function update(Request $request, Book $book)
     {
-        $data = $request->validate([
+        $validated = $request->validate([
             'title' => 'required|string|max:255',
             'author' => 'required|string|max:255',
-            'year' => 'required|integer|min:1000|max:9999',
+            'year' => 'required|integer|digit:4|min:2000|max:2026',
             'stock' => 'required|integer|min:0',
         ]);
 
-        $book->update($data);
+        $book->update($validated);
 
         return redirect()->route('books.index')
         ->with('success', 'Buku berhasil diperbarui!');
