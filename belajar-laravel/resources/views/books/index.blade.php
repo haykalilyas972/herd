@@ -7,6 +7,12 @@
 <body>
     <h1>Daftar Buku</h1>
 
+    <form action="{{ route('logout') }}" method="POST">
+        @csrf
+        <button type="submit">Logout</button>
+    </form>
+
+
     <a href="{{ route('books.create') }}">+ Tambah Buku</a>
 
     <br><br>
