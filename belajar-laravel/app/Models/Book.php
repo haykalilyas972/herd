@@ -3,7 +3,6 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class Book extends Model
 {
@@ -15,8 +14,13 @@ class Book extends Model
         'category_id',
     ];
 
-    public function category(): BelongsTo
+    public function category()
     {
         return $this->belongsTo(Category::class);
+    }
+
+    public function borrowingDetails()
+    {
+        return $this->hasMany(BorrowingDetail::class);
     }
 }
