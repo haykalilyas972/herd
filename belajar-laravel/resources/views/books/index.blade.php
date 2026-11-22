@@ -12,7 +12,6 @@
         <button type="submit">Logout</button>
     </form>
 
-
     <a href="{{ route('books.create') }}">+ Tambah Buku</a>
 
     <br><br>
@@ -31,15 +30,17 @@
 
         <a href="{{ route('books.edit', $book->id) }}">Edit</a>
 
-        <form action="{{ route('books.destroy', $book->id) }}"
-              method="POST"
-              onsubmit="return confirm('Yakin ingin menghapus buku ini?')">
+        @can('delete', $book)
+            <form action="{{ route('books.destroy', $book->id) }}"
+                  method="POST"
+                  onsubmit="return confirm('Yakin ingin menghapus buku ini?')">
 
-            @csrf
-            @method('DELETE')
+                @csrf
+                @method('DELETE')
 
-            <button type="submit">Hapus</button>
-        </form>
+                <button type="submit">Hapus</button>
+            </form>
+        @endcan
 
         <hr>
     @empty
