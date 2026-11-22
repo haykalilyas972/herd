@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Book;
 use App\Models\Category;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Gate;
 
 class BookController extends Controller
 {
@@ -19,9 +20,9 @@ class BookController extends Controller
     // CREATE: Menampilkan form tambah buku
     public function create()
     {
-    $categories = Category::orderBy('name')->get();
+        $categories = Category::orderBy('name')->get();
 
-    return view('books.create', compact('categories'));
+        return view('books.create', compact('categories'));
     }
 
     // CREATE: Menyimpan buku baru
@@ -38,8 +39,8 @@ class BookController extends Controller
         Book::create($validated);
 
         return redirect()
-        ->route('books.index')
-        ->with('success', 'Buku berhasil ditambahkan!');
+            ->route('books.index')
+            ->with('success', 'Buku berhasil ditambahkan!');
     }
 
     // READ: Menampilkan detail buku
@@ -51,34 +52,38 @@ class BookController extends Controller
     // UPDATE: Menampilkan form edit
     public function edit(Book $book)
     {
-    $categories = Category::orderBy('name')->get();
+        $categories = Category::orderBy('name')->get();
 
-    return view('books.edit', compact('book', 'categories'));
+        return view('books.edit', compact('book', 'categories'));
     }
 
     // UPDATE: Menyimpan perubahan buku
     public function update(Request $request, Book $book)
     {
-    $validated = $request->validate([
-        'title'       => 'required|string|max:255',
-        'author'      => 'required|string|max:255',
-        'year'        => 'required|integer|digits:4|min:2000|max:2026',
-        'stock'       => 'required|integer|min:0',
-        'category_id' => 'required|exists:categories,id',
-    ]);
+        $validated = $request->validate([
+            'title' => 'required|string|max:255',
+            'author' => 'required|string|max:255',
+            'year' => 'required|integer|digits:4|min:2000|max:2026',
+            'stock' => 'required|integer|min:0',
+            'category_id' => 'required|exists:categories,id',
+        ]);
 
-    $book->update($validated);
+        $book->update($validated);
 
-    return redirect()->route('books.index')
-        ->with('success', 'Data buku berhasil diperbarui.');
-        }
+        return redirect()
+            ->route('books.index')
+            ->with('success', 'Data buku berhasil diperbarui.');
+    }
 
-    // DELETE: Menghapus buku
+    // DELETE: Menghapus buku menggunakan Policy
     public function destroy(Book $book)
     {
+        Gate::authorize('delete', $book);
+
         $book->delete();
 
-        return redirect()->route('books.index')
-        ->with('success', 'Buku berhasil dihapus!');
+        return redirect()
+            ->route('books.index')
+            ->with('success', 'Buku berhasil dihapus!');
     }
 }
